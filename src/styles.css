@@ -1,0 +1,373 @@
+:root {
+  --primary-color: #007bff;
+  --primary-dark: #0056b3;
+  --success-color: #28a745;
+  --success-dark: #1e7e34;
+  --danger-color: #dc3545;
+  --danger-dark: #c82333;
+  --info-color: #17a2b8;
+  --info-dark: #138496;
+  --text-primary: #212529;
+  --text-secondary: #495057;
+  --bg-primary: #fff;
+  --bg-secondary: #f8f9fa;
+  --border-color: #ced4da;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-color: #0d6efd;
+    --primary-dark: #0a58ca;
+    --success-color: #198754;
+    --success-dark: #146c43;
+    --danger-color: #dc3545;
+    --danger-dark: #bb2d3b;
+    --info-color: #0dcaf0;
+    --info-dark: #0aa1c0;
+    --text-primary: #f8f9fa;
+    --text-secondary: #e9ecef;
+    --bg-primary: #212529;
+    --bg-secondary: #343a40;
+    --border-color: #495057;
+    --shadow-color: rgba(0, 0, 0, 0.25);
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.5;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.app {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.app-header h1 {
+  color: var(--text-primary);
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-shadow: 0 1px 3px var(--shadow-color);
+}
+
+.app-main {
+  background: var(--bg-primary);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px var(--shadow-color);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.app-main:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px var(--shadow-color);
+}
+
+/* WorkStatusDisplay styles */
+.work-status-display {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  transition: transform 0.2s;
+}
+
+.status {
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  background: var(--bg-primary);
+}
+
+.status.working .status-value {
+  color: var(--success-color);
+  font-weight: bold;
+  text-shadow: 0 0 10px var(--success-color);
+}
+
+.status.free .status-value {
+  color: var(--text-secondary);
+}
+
+.status-label, .time-label {
+  margin-right: 1rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.time-value {
+  font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+  font-size: 1.4rem;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 3px var(--shadow-color);
+}
+
+/* ActionButtons styles */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.work-control {
+  width: 100%;
+  max-width: 240px;
+}
+
+.start-button, .end-button {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px var(--shadow-color);
+  position: relative;
+  overflow: hidden;
+}
+
+.start-button::before, .end-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300%;
+  height: 300%;
+  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 50%);
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.6s ease-out;
+}
+
+.start-button:active::before, .end-button:active::before {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.start-button {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.start-button:hover {
+  background-color: var(--success-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+.end-button {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.end-button:hover {
+  background-color: var(--danger-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+.start-button:active, .end-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 2px var(--shadow-color);
+}
+
+.copy-buttons {
+  display: flex;
+  gap: 1rem;
+  position: relative;
+}
+
+/* 記録一覧のスタイル */
+.records-list {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--bg-primary);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.records-list h3 {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.records-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.record-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  background: var(--bg-secondary);
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.record-number {
+  color: var(--text-secondary);
+  margin-right: 1rem;
+  min-width: 4rem;
+}
+
+.record-time {
+  font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+  color: var(--text-primary);
+}
+
+/* コピーアニメーション */
+@keyframes copySuccess {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+    background-color: var(--success-color);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.copy-button.success {
+  animation: copySuccess 0.5s ease-in-out;
+}
+
+.copy-button {
+  padding: 0.75rem 1.25rem;
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.copy-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background-color: var(--primary-color);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+  border-radius: 50%;
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+.copy-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--primary-color);
+}
+
+.copy-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+.copy-button:active::after {
+  opacity: 0.1;
+  transform: translate(-50%, -50%) scale(2);
+}
+
+.copy-button.simple {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: transparent;
+}
+
+.copy-button.detailed {
+  background-color: var(--info-color);
+  color: white;
+  border-color: transparent;
+}
+
+.copy-button.simple:hover {
+  background-color: var(--primary-dark);
+}
+
+.copy-button.detailed:hover {
+  background-color: var(--info-dark);
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .app {
+    margin: 0;
+    padding: 1rem;
+  }
+  
+  .app-main {
+    padding: 1rem;
+  }
+  
+  .copy-buttons {
+    flex-direction: column;
+    width: 100%;
+    max-width: 240px;
+  }
+  
+  .copy-button {
+    width: 100%;
+  }
+
+  .status, .time-value {
+    font-size: 1.2rem;
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+:focus {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+[aria-busy="true"] {
+  cursor: progress;
+}
+
+[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
