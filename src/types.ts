@@ -14,7 +14,7 @@ export interface WorkTimeRecord {
 /**
  * クリップボードコピー用のフォーマット型
  */
-export type CopyFormat = 'simple' | 'detailed';
+export type CopyFormat = 'simple' | 'spreadsheet';
 
 /**
  * useWorkStatusフックの戻り値の型

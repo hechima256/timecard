@@ -1,27 +1,5 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import type { WorkStatus, WorkTimeRecord, CopyFormat, WorkStatusHook } from '../types';
-
-// ストレージのキー設定
-const STORAGE_KEY_PREFIX = 'timecard';
-const getStorageKey = (date: string = new Date().toISOString().split('T')[0]) =>
-  `${STORAGE_KEY_PREFIX}_${date}`;
-
-// 日付が変わったかどうかを判定する関数
-const isNewDay = (lastUpdated: string): boolean => {
-  const lastDate = new Date(lastUpdated).toISOString().split('T')[0];
-  const currentDate = new Date().toISOString().split('T')[0];
-  return lastDate !== currentDate;
-};
-
-// ストレージデータの型
-interface StorageData {
-  currentStatus: WorkStatus;
-  todayRecords: {
-    startTime: string;
-    endTime: string | null;
-  }[];
-  lastUpdated: string;
-}
 
 export const useWorkStatus = (): WorkStatusHook => {
   // 現在の勤怠状態を管理
@@ -30,109 +8,6 @@ export const useWorkStatus = (): WorkStatusHook => {
   // 今日の勤務記録を管理
   const [todayRecords, setTodayRecords] = useState<WorkTimeRecord[]>([]);
 
-  // ストレージからデータを読み込む
-  const loadFromStorage = useCallback(() => {
-    try {
-      const key = getStorageKey();
-      const storedData = localStorage.getItem(key);
-      console.log('ストレージからのデータ読み込み試行:', { key });
-      
-      if (storedData) {
-        const data: StorageData = JSON.parse(storedData);
-        
-        // 日付が変わっていた場合はリセット
-        if (isNewDay(data.lastUpdated)) {
-          console.log('日付が変更されたためデータをリセット:', {
-            前回の更新: data.lastUpdated,
-            現在時刻: new Date().toISOString()
-          });
-          return;
-        }
-
-        // データを復元
-        setCurrentStatus(data.currentStatus);
-        const records = data.todayRecords.map(record => ({
-          startTime: new Date(record.startTime),
-          endTime: record.endTime ? new Date(record.endTime) : null
-        }));
-        setTodayRecords(records);
-        
-        console.log('データを復元:', {
-          状態: data.currentStatus,
-          記録数: records.length
-        });
-      } else {
-        console.log('保存されたデータなし');
-      }
-    } catch (error) {
-      console.error('ストレージからの読み込みに失敗しました:', error);
-    }
-  }, []);
-
-  // ストレージにデータを保存
-  const saveToStorage = useCallback(() => {
-    try {
-      const key = getStorageKey();
-      const data: StorageData = {
-        currentStatus,
-        todayRecords: todayRecords.map(record => ({
-          startTime: record.startTime.toISOString(),
-          endTime: record.endTime?.toISOString() ?? null
-        })),
-        lastUpdated: new Date().toISOString()
-      };
-      
-      console.log('ストレージに保存:', {
-        キー: key,
-        状態: currentStatus,
-        記録数: todayRecords.length,
-        最終更新: data.lastUpdated
-      });
-
-      const serializedData = JSON.stringify(data);
-      localStorage.setItem(key, serializedData);
-      
-      // 保存後の確認
-      const savedData = localStorage.getItem(key);
-      if (savedData !== serializedData) {
-        console.warn('保存データの不一致:', {
-          期待値: serializedData,
-          実際: savedData
-        });
-      } else {
-        console.log('保存成功');
-      }
-    } catch (error) {
-      console.error('ストレージへの保存に失敗しました:', error);
-    }
-  }, [currentStatus, todayRecords]);
-
-  // 日付変更の監視
-  useEffect(() => {
-    const checkDateChange = () => {
-      const lastRecord = todayRecords[todayRecords.length - 1];
-      if (lastRecord && isNewDay(lastRecord.startTime.toISOString())) {
-        console.log('日付が変更されたため記録をリセット');
-        setTodayRecords([]);
-        setCurrentStatus('free');
-      }
-    };
-
-    const timer = setInterval(checkDateChange, 1000 * 60); // 1分ごとにチェック
-    return () => clearInterval(timer);
-  }, [todayRecords]);
-
-  // 初回マウント時にデータを読み込む
-  useEffect(() => {
-    loadFromStorage();
-  }, [loadFromStorage]);
-
-  // 状態が変更されたときにストレージに保存
-  useEffect(() => {
-    saveToStorage();
-  }, [currentStatus, todayRecords, saveToStorage]);
-
-  // 業務開始処理
   // 時刻の検証
   const validateTimeRecord = useCallback((startTime: Date, endTime: Date | null): boolean => {
     // 開始時刻が未来の場合はエラー
@@ -252,11 +127,6 @@ export const useWorkStatus = (): WorkStatusHook => {
       day: '2-digit'
     });
     
-    console.log('クリップボードコピー開始:', {
-      フォーマット: format,
-      記録数: todayRecords.length
-    });
-
     if (format === 'simple') {
       // シンプルフォーマット: "MM/DD: 開始-終了"
       text = `${today}: ${todayRecords
@@ -266,27 +136,35 @@ export const useWorkStatus = (): WorkStatusHook => {
           return `${start}-${end}`;
         })
         .join(', ')}`;
-    } else {
-      // 詳細フォーマット
-      const totalTime = todayRecords.reduce((total, record) => {
-        if (!record.endTime) return total;
-        return total + (record.endTime.getTime() - record.startTime.getTime());
-      }, 0);
-      
-      text = `${today}\n\n`;
-      todayRecords.forEach((record, index) => {
-        const start = formatTime(record.startTime);
-        const end = record.endTime ? formatTime(record.endTime) : '進行中';
-        const duration = record.endTime
-          ? `（${Math.floor((record.endTime.getTime() - record.startTime.getTime()) / (1000 * 60))}分）`
-          : '';
-        text += `${index + 1}回目: ${start} - ${end}${duration}\n`;
-      });
-
-      if (totalTime > 0) {
-        const hours = Math.floor(totalTime / (1000 * 60 * 60));
-        const minutes = Math.floor((totalTime % (1000 * 60 * 60)) / (1000 * 60));
-        text += `\n合計時間: ${hours}時間${minutes}分`;
+    } else if (format === 'spreadsheet') {
+      // スプレッドシート形式: "開始時刻\t終了時刻\t休憩時間"
+      if (todayRecords.length > 0) {
+        // 最初の業務開始時刻
+        const firstStart = formatTime(todayRecords[0].startTime);
+        
+        // 最後の業務終了時刻（未終了の場合は現在時刻）
+        const lastRecord = todayRecords[todayRecords.length - 1];
+        const lastEnd = lastRecord.endTime
+          ? formatTime(lastRecord.endTime)
+          : formatTime(new Date());
+        
+        // 休憩時間の計算（分単位）
+        let totalBreakMinutes = 0;
+        for (let i = 0; i < todayRecords.length - 1; i++) {
+          const currentEnd = todayRecords[i].endTime;
+          const nextStart = todayRecords[i + 1].startTime;
+          if (currentEnd) {
+            const breakTime = nextStart.getTime() - currentEnd.getTime();
+            totalBreakMinutes += Math.floor(breakTime / (1000 * 60));
+          }
+        }
+        
+        // 休憩時間をHH:mm形式に変換
+        const breakHours = Math.floor(totalBreakMinutes / 60);
+        const breakMinutes = totalBreakMinutes % 60;
+        const breakTime = `${breakHours.toString().padStart(2, '0')}:${breakMinutes.toString().padStart(2, '0')}`;
+        
+        text = `${firstStart}\t${lastEnd}\t${breakTime}`;
       }
     }
 

@@ -69,13 +69,13 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
           シンプルコピー
         </button>
         <button
-          className={`copy-button detailed ${copyingButton === 'copy-detailed' ? 'success' : ''}`}
-          onClick={() => handleCopy('detailed')}
+          className={`copy-button spreadsheet ${copyingButton === 'copy-spreadsheet' ? 'success' : ''}`}
+          onClick={() => handleCopy('spreadsheet')}
           disabled={todayRecords.length === 0}
-          aria-label="詳細形式でコピー"
-          title="詳細な記録をコピーします"
+          aria-label="スプレッドシート形式でコピー"
+          title="スプレッドシート用にタブ区切りでコピーします"
         >
-          詳細コピー
+          スプレッドシートコピー
         </button>
       </div>
     </div>
