@@ -1,12 +1,13 @@
-import React, { useState, useCallback } from 'react';
-import type { WorkStatus, CopyFormat, WorkTimeRecord } from '../types';
+import React, { useState, useEffect, useCallback } from 'react';
+import type { WorkStatus, WorkTimeRecord } from '../types';
+import { formatWorkHours, formatWorkDuration } from '../utils/workHours';
 
 interface ActionButtonsProps {
   currentStatus: WorkStatus;
   todayRecords: WorkTimeRecord[];
   startWork: () => void;
   endWork: () => void;
-  copyToClipboard: (format: CopyFormat) => Promise<void>;
+  copyToClipboard: () => Promise<void>;
 }
 
 export const ActionButtons: React.FC<ActionButtonsProps> = ({
@@ -16,23 +17,33 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
   endWork,
   copyToClipboard
 }) => {
-  const [copyingButton, setCopyingButton] = useState<string | null>(null);
+  const [isCopying, setIsCopying] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
 
-  const handleCopy = useCallback(async (format: CopyFormat) => {
-    console.log('コピーボタンクリック:', { format });
-    const buttonId = `copy-${format}`;
-    
+  // 業務中は勤務時間が増え続けるので、コピーされる値の表示を1秒ごとに更新する
+  // （now は進行中の記録にのみ使われるため、終了済みの記録だけなら古くても結果は変わらない）
+  useEffect(() => {
+    if (currentStatus !== 'working') return;
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, [currentStatus]);
+
+  const handleCopy = useCallback(async () => {
     try {
-      setCopyingButton(buttonId);
-      await copyToClipboard(format);
+      setIsCopying(true);
+      await copyToClipboard();
       console.log('コピー成功');
       // アニメーション完了後にリセット
-      setTimeout(() => setCopyingButton(null), 500);
+      setTimeout(() => setIsCopying(false), 500);
     } catch (error) {
       console.error('コピー失敗:', error);
-      setCopyingButton(null);
+      setIsCopying(false);
     }
   }, [copyToClipboard]);
+
+  const hasRecords = todayRecords.length > 0;
+  const workHours = formatWorkHours(todayRecords, now);
+  const workDuration = formatWorkDuration(todayRecords, now);
 
   return (
     <div className="action-buttons" role="group" aria-label="業務時間の操作">
@@ -57,32 +68,21 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
           </button>
         )}
       </div>
-      
-      <div className="copy-buttons" role="group" aria-label="記録のコピー">
+
+      <div className="copy-section" role="group" aria-label="勤務時間のコピー">
+        <div className="copy-preview" aria-live="polite">
+          <span className="copy-preview-label">コピーされる値:</span>
+          <span className="copy-preview-value">{hasRecords ? workHours : '－'}</span>
+          {hasRecords && (
+            <span className="copy-preview-detail">（{workDuration}）</span>
+          )}
+        </div>
         <button
-          className={`copy-button simple ${copyingButton === 'copy-simple' ? 'success' : ''}`}
-          onClick={() => handleCopy('simple')}
-          disabled={todayRecords.length === 0}
-          aria-label="シンプル形式でコピー"
-          title="一行形式で記録をコピーします"
-        >
-          シンプルコピー
-        </button>
-        <button
-          className={`copy-button spreadsheet ${copyingButton === 'copy-spreadsheet' ? 'success' : ''}`}
-          onClick={() => handleCopy('spreadsheet')}
-          disabled={todayRecords.length === 0}
-          aria-label="スプレッドシート形式でコピー"
-          title="スプレッドシート用にタブ区切りでコピーします"
-        >
-          スプレッドシートコピー
-        </button>
-        <button
-          className={`copy-button hours ${copyingButton === 'copy-hours' ? 'success' : ''}`}
-          onClick={() => handleCopy('hours')}
-          disabled={todayRecords.length === 0}
-          aria-label="勤務時間のみコピー"
-          title="合計勤務時間だけを小数の時間でコピーします（例: 1.4）"
+          className={`copy-button hours ${isCopying ? 'success' : ''}`}
+          onClick={handleCopy}
+          disabled={!hasRecords}
+          aria-label="勤務時間をコピー"
+          title="合計勤務時間を小数の時間（例: 1.4）でコピーします"
         >
           勤務時間コピー
         </button>

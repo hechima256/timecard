@@ -193,12 +193,39 @@ body {
   box-shadow: 0 1px 2px var(--shadow-color);
 }
 
-.copy-buttons {
+.copy-section {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
   position: relative;
+}
+
+/* 勤務時間コピーでコピーされる値のプレビュー */
+.copy-preview {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--bg-secondary);
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.copy-preview-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.copy-preview-value {
+  font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.copy-preview-detail {
+  color: var(--text-secondary);
 }
 
 /* 記録一覧のスタイル */
@@ -291,6 +318,13 @@ body {
   transition: transform 0.3s, opacity 0.3s;
 }
 
+.copy-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 .copy-button:focus {
   outline: none;
   box-shadow: 0 0 0 3px var(--primary-color);
@@ -304,26 +338,6 @@ body {
 .copy-button:active::after {
   opacity: 0.1;
   transform: translate(-50%, -50%) scale(2);
-}
-
-.copy-button.simple {
-  background-color: var(--primary-color);
-  color: white;
-  border-color: transparent;
-}
-
-.copy-button.detailed {
-  background-color: var(--info-color);
-  color: white;
-  border-color: transparent;
-}
-
-.copy-button.simple:hover {
-  background-color: var(--primary-dark);
-}
-
-.copy-button.detailed:hover {
-  background-color: var(--info-dark);
 }
 
 .copy-button.hours {
@@ -347,12 +361,17 @@ body {
     padding: 1rem;
   }
   
-  .copy-buttons {
-    flex-direction: column;
+  .copy-section {
     width: 100%;
     max-width: 240px;
   }
-  
+
+  .copy-preview {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
   .copy-button {
     width: 100%;
   }

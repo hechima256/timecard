@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-import type { WorkStatus, WorkTimeRecord, CopyFormat, WorkStatusHook } from '../types';
+import type { WorkStatus, WorkTimeRecord, WorkStatusHook } from '../types';
+import { formatWorkHours } from '../utils/workHours';
 
 export const useWorkStatus = (): WorkStatusHook => {
   // 現在の勤怠状態を管理
@@ -109,78 +110,13 @@ export const useWorkStatus = (): WorkStatusHook => {
     }
   }, [currentStatus, validateTimeRecord]);
 
-  // 時刻を "HH:mm" 形式にフォーマットする関数
-  const formatTime = (date: Date): string => {
-    return date.toLocaleTimeString('ja-JP', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    });
-  };
-
-  // クリップボードにコピーする処理
-  const copyToClipboard = useCallback(async (format: CopyFormat) => {
-    let text = '';
-    const today = new Date().toLocaleDateString('ja-JP', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    });
-    
-    if (format === 'simple') {
-      // シンプルフォーマット: "MM/DD: 開始-終了"
-      text = `${today}: ${todayRecords
-        .map(record => {
-          const start = formatTime(record.startTime);
-          const end = record.endTime ? formatTime(record.endTime) : '進行中';
-          return `${start}-${end}`;
-        })
-        .join(', ')}`;
-    } else if (format === 'spreadsheet') {
-      // スプレッドシート形式: "開始時刻\t終了時刻\t休憩時間"
-      if (todayRecords.length > 0) {
-        // 最初の業務開始時刻
-        const firstStart = formatTime(todayRecords[0].startTime);
-        
-        // 最後の業務終了時刻（未終了の場合は現在時刻）
-        const lastRecord = todayRecords[todayRecords.length - 1];
-        const lastEnd = lastRecord.endTime
-          ? formatTime(lastRecord.endTime)
-          : formatTime(new Date());
-        
-        // 休憩時間の計算（分単位）
-        let totalBreakMinutes = 0;
-        for (let i = 0; i < todayRecords.length - 1; i++) {
-          const currentEnd = todayRecords[i].endTime;
-          const nextStart = todayRecords[i + 1].startTime;
-          if (currentEnd) {
-            const breakTime = nextStart.getTime() - currentEnd.getTime();
-            totalBreakMinutes += Math.floor(breakTime / (1000 * 60));
-          }
-        }
-        
-        // 休憩時間をHH:mm形式に変換
-        const breakHours = Math.floor(totalBreakMinutes / 60);
-        const breakMinutes = totalBreakMinutes % 60;
-        const breakTime = `${breakHours.toString().padStart(2, '0')}:${breakMinutes.toString().padStart(2, '0')}`;
-        
-        text = `${firstStart}\t${lastEnd}\t${breakTime}`;
-      }
-    } else if (format === 'hours') {
-      // 勤務時間形式: 合計勤務時間を小数の時間で表す（例: 1時間24分 → "1.4"）
-      const now = Date.now();
-      const totalMs = todayRecords.reduce((sum, record) => {
-        const end = record.endTime ? record.endTime.getTime() : now;
-        return sum + Math.max(0, end - record.startTime.getTime());
-      }, 0);
-      const totalHours = totalMs / (1000 * 60 * 60);
-      text = (Math.round(totalHours * 10) / 10).toFixed(1);
-    }
+  // 合計勤務時間を小数の時間（例: 1時間24分 → "1.4"）でクリップボードにコピーする処理
+  const copyToClipboard = useCallback(async () => {
+    const text = formatWorkHours(todayRecords, Date.now());
 
     try {
       await navigator.clipboard.writeText(text);
       console.log('クリップボードにコピーしました:', {
-        フォーマット: format,
         コピーした内容: text
       });
     } catch (error) {

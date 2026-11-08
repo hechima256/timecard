@@ -12,11 +12,6 @@ export interface WorkTimeRecord {
 }
 
 /**
- * クリップボードコピー用のフォーマット型
- */
-export type CopyFormat = 'simple' | 'spreadsheet' | 'hours';
-
-/**
  * useWorkStatusフックの戻り値の型
  */
 export interface WorkStatusHook {
@@ -28,6 +23,6 @@ export interface WorkStatusHook {
   startWork: () => void;
   // 業務終了処理
   endWork: () => void;
-  // 指定フォーマットでクリップボードにコピー
-  copyToClipboard: (format: CopyFormat) => Promise<void>;
+  // 合計勤務時間（小数の時間、例: "1.4"）をクリップボードにコピー
+  copyToClipboard: () => Promise<void>;
 }
