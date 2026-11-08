@@ -123,6 +123,115 @@ body {
   box-shadow: inset 0 1px 3px var(--shadow-color);
 }
 
+/* WorkSummary styles: 本日の勤務時間カード */
+.work-summary {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "title title"
+    "body  action";
+  align-items: center;
+  gap: 0.25rem 1.5rem;
+  margin-bottom: 2rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  text-align: left;
+}
+
+.work-summary-title {
+  grid-area: title;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.work-summary-body {
+  grid-area: body;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.work-summary-figure {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+}
+
+.work-summary-hours {
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.work-summary-unit {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+}
+
+.work-summary-duration {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.copy-button {
+  grid-area: action;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px var(--shadow-color);
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s, transform 0.1s;
+}
+
+.copy-button:hover:not(:disabled) {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.copy-button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.copy-button:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.copy-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.copy-button.copied {
+  background-color: var(--success-color);
+  border-color: var(--success-color);
+  color: white;
+}
+
+.copy-button.failed {
+  background-color: var(--danger-color);
+  border-color: var(--danger-color);
+  color: white;
+}
+
+.copy-button-icon {
+  flex-shrink: 0;
+}
+
 /* ActionButtons styles */
 .action-buttons {
   display: flex;
@@ -193,41 +302,6 @@ body {
   box-shadow: 0 1px 2px var(--shadow-color);
 }
 
-.copy-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  position: relative;
-}
-
-/* 勤務時間コピーでコピーされる値のプレビュー */
-.copy-preview {
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: var(--bg-secondary);
-  border-radius: 6px;
-  font-size: 0.95rem;
-}
-
-.copy-preview-label {
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
-.copy-preview-value {
-  font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.copy-preview-detail {
-  color: var(--text-secondary);
-}
-
 /* 記録一覧のスタイル */
 .records-list {
   margin-top: 1.5rem;
@@ -273,83 +347,6 @@ body {
   color: var(--text-primary);
 }
 
-/* コピーアニメーション */
-@keyframes copySuccess {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-    background-color: var(--success-color);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-.copy-button.success {
-  animation: copySuccess 0.5s ease-in-out;
-}
-
-.copy-button {
-  padding: 0.75rem 1.25rem;
-  border: 2px solid var(--border-color);
-  border-radius: 6px;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-  overflow: hidden;
-}
-
-.copy-button::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  background-color: var(--primary-color);
-  opacity: 0;
-  transform: translate(-50%, -50%) scale(0);
-  border-radius: 50%;
-  transition: transform 0.3s, opacity 0.3s;
-}
-
-.copy-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.copy-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px var(--primary-color);
-}
-
-.copy-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px var(--shadow-color);
-}
-
-.copy-button:active::after {
-  opacity: 0.1;
-  transform: translate(-50%, -50%) scale(2);
-}
-
-.copy-button.hours {
-  background-color: var(--success-color);
-  color: white;
-  border-color: transparent;
-}
-
-.copy-button.hours:hover {
-  background-color: var(--success-dark);
-}
-
 /* Responsive design */
 @media (max-width: 480px) {
   .app {
@@ -361,19 +358,24 @@ body {
     padding: 1rem;
   }
   
-  .copy-section {
-    width: 100%;
-    max-width: 240px;
+  .work-summary {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "title"
+      "body"
+      "action";
+    justify-items: center;
+    text-align: center;
+    gap: 0.75rem;
   }
 
-  .copy-preview {
-    width: 100%;
-    justify-content: center;
-    flex-wrap: wrap;
+  .work-summary-body {
+    align-items: center;
   }
 
   .copy-button {
     width: 100%;
+    justify-content: center;
   }
 
   .status, .time-value {

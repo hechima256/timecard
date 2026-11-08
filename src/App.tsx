@@ -1,6 +1,7 @@
 import React from 'react';
 import { useWorkStatus } from './hooks/useWorkStatus';
 import { WorkStatusDisplay } from './components/WorkStatusDisplay';
+import { WorkSummary } from './components/WorkSummary';
 import { ActionButtons } from './components/ActionButtons';
 import './styles.css';
 
@@ -24,13 +25,17 @@ export const App: React.FC = () => {
           currentStatus={currentStatus}
           todayRecords={todayRecords}
         />
+
+        <WorkSummary
+          currentStatus={currentStatus}
+          todayRecords={todayRecords}
+          copyToClipboard={copyToClipboard}
+        />
         
         <ActionButtons
           currentStatus={currentStatus}
-          todayRecords={todayRecords}
           startWork={startWork}
           endWork={endWork}
-          copyToClipboard={copyToClipboard}
         />
       </main>
     </div>
