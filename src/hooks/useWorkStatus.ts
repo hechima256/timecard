@@ -166,6 +166,15 @@ export const useWorkStatus = (): WorkStatusHook => {
         
         text = `${firstStart}\t${lastEnd}\t${breakTime}`;
       }
+    } else if (format === 'hours') {
+      // 勤務時間形式: 合計勤務時間を小数の時間で表す（例: 1時間24分 → "1.4"）
+      const now = Date.now();
+      const totalMs = todayRecords.reduce((sum, record) => {
+        const end = record.endTime ? record.endTime.getTime() : now;
+        return sum + Math.max(0, end - record.startTime.getTime());
+      }, 0);
+      const totalHours = totalMs / (1000 * 60 * 60);
+      text = (Math.round(totalHours * 10) / 10).toFixed(1);
     }
 
     try {

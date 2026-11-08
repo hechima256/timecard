@@ -77,6 +77,15 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
         >
           スプレッドシートコピー
         </button>
+        <button
+          className={`copy-button hours ${copyingButton === 'copy-hours' ? 'success' : ''}`}
+          onClick={() => handleCopy('hours')}
+          disabled={todayRecords.length === 0}
+          aria-label="勤務時間のみコピー"
+          title="合計勤務時間だけを小数の時間でコピーします（例: 1.4）"
+        >
+          勤務時間コピー
+        </button>
       </div>
     </div>
   );

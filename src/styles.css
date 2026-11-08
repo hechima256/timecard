@@ -195,6 +195,8 @@ body {
 
 .copy-buttons {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 1rem;
   position: relative;
 }
@@ -322,6 +324,16 @@ body {
 
 .copy-button.detailed:hover {
   background-color: var(--info-dark);
+}
+
+.copy-button.hours {
+  background-color: var(--success-color);
+  color: white;
+  border-color: transparent;
+}
+
+.copy-button.hours:hover {
+  background-color: var(--success-dark);
 }
 
 /* Responsive design */
