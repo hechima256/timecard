@@ -110,7 +110,7 @@ export const useWorkStatus = (): WorkStatusHook => {
     }
   }, [currentStatus, validateTimeRecord]);
 
-  // 合計勤務時間を小数の時間（例: 1時間24分 → "1.4"）でクリップボードにコピーする処理
+  // 合計勤務時間を "H:MM" 形式（例: 2時間32分 → "2:32"）でクリップボードにコピーする処理
   const copyToClipboard = useCallback(async () => {
     const text = formatWorkHours(todayRecords, Date.now());
 

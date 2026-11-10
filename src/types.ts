@@ -23,6 +23,6 @@ export interface WorkStatusHook {
   startWork: () => void;
   // 業務終了処理
   endWork: () => void;
-  // 合計勤務時間（小数の時間、例: "1.4"）をクリップボードにコピー
+  // 合計勤務時間（"H:MM" 形式、例: "2:32"）をクリップボードにコピー
   copyToClipboard: () => Promise<void>;
 }

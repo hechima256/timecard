@@ -168,11 +168,6 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-.work-summary-unit {
-  font-size: 1.1rem;
-  color: var(--text-secondary);
-}
-
 .work-summary-duration {
   font-size: 0.9rem;
   color: var(--text-secondary);

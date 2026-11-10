@@ -11,7 +11,7 @@ interface WorkSummaryProps {
 type CopyState = 'idle' | 'copied' | 'failed';
 
 /**
- * 本日の合計勤務時間を表示し、その値（例: 1.4）をコピーするカード
+ * 本日の合計勤務時間を表示し、その値（例: 2:32）をコピーするカード
  */
 export const WorkSummary: React.FC<WorkSummaryProps> = ({
   currentStatus,
@@ -64,7 +64,6 @@ export const WorkSummary: React.FC<WorkSummaryProps> = ({
       <div className="work-summary-body">
         <div className="work-summary-figure">
           <span className="work-summary-hours">{hours}</span>
-          <span className="work-summary-unit">時間</span>
         </div>
         <p className="work-summary-duration">
           {hasRecords ? duration : 'まだ記録がありません'}

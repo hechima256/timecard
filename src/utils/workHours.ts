@@ -12,12 +12,14 @@ export const calculateTotalWorkMs = (records: WorkTimeRecord[], now: number): nu
 };
 
 /**
- * 合計勤務時間を小数の時間の文字列にする（例: 1時間24分 → "1.4"）。
- * これがクリップボードにコピーされる値。
+ * 合計勤務時間を "H:MM" 形式の文字列にする（例: 2時間32分 → "2:32"）。
+ * これがクリップボードにコピーされる値。秒は切り捨てる。
  */
 export const formatWorkHours = (records: WorkTimeRecord[], now: number): string => {
-  const totalHours = calculateTotalWorkMs(records, now) / (1000 * 60 * 60);
-  return (Math.round(totalHours * 10) / 10).toFixed(1);
+  const totalMinutes = Math.floor(calculateTotalWorkMs(records, now) / (1000 * 60));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `${hours}:${minutes.toString().padStart(2, '0')}`;
 };
 
 /**
