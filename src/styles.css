@@ -297,6 +297,37 @@ body {
   box-shadow: 0 1px 2px var(--shadow-color);
 }
 
+/* 記録をリセットするボタン（控えめなテキストボタン） */
+.reset-button {
+  margin-top: -0.5rem;
+  padding: 0.4rem 0.75rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.reset-button:hover:not(:disabled) {
+  color: var(--danger-color);
+  background-color: var(--bg-secondary);
+}
+
+.reset-button:focus-visible {
+  outline: 2px solid var(--danger-color);
+  outline-offset: 2px;
+}
+
+.reset-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
 /* 記録一覧のスタイル */
 .records-list {
   margin-top: 1.5rem;

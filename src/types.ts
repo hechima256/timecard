@@ -25,4 +25,6 @@ export interface WorkStatusHook {
   endWork: () => void;
   // 合計勤務時間（"H:MM" 形式、例: "2:32"）をクリップボードにコピー
   copyToClipboard: () => Promise<void>;
+  // 今日の記録をすべて削除して初期状態に戻す
+  resetRecords: () => void;
 }

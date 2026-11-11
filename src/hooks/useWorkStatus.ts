@@ -1,13 +1,25 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import type { WorkStatus, WorkTimeRecord, WorkStatusHook } from '../types';
 import { formatWorkHours } from '../utils/workHours';
+import { loadRecords, saveRecords, clearStoredRecords } from '../utils/storage';
+
+// 最後の記録が未終了なら業務中
+const statusFromRecords = (records: WorkTimeRecord[]): WorkStatus => {
+  const lastRecord = records[records.length - 1];
+  return lastRecord && !lastRecord.endTime ? 'working' : 'free';
+};
 
 export const useWorkStatus = (): WorkStatusHook => {
+  // 今日の勤務記録を管理（ページ再読み込み後も残るよう localStorage から復元する）
+  const [todayRecords, setTodayRecords] = useState<WorkTimeRecord[]>(() => loadRecords());
+
   // 現在の勤怠状態を管理
-  const [currentStatus, setCurrentStatus] = useState<WorkStatus>('free');
-  
-  // 今日の勤務記録を管理
-  const [todayRecords, setTodayRecords] = useState<WorkTimeRecord[]>([]);
+  const [currentStatus, setCurrentStatus] = useState<WorkStatus>(() => statusFromRecords(todayRecords));
+
+  // 記録が変わるたびに保存する
+  useEffect(() => {
+    saveRecords(todayRecords);
+  }, [todayRecords]);
 
   // 時刻の検証
   const validateTimeRecord = useCallback((startTime: Date, endTime: Date | null): boolean => {
@@ -125,11 +137,20 @@ export const useWorkStatus = (): WorkStatusHook => {
     }
   }, [todayRecords]);
 
+  // 今日の記録をすべて削除して初期状態に戻す
+  const resetRecords = useCallback(() => {
+    console.log('記録をリセットしました:', { 削除した記録数: todayRecords.length });
+    clearStoredRecords();
+    setTodayRecords([]);
+    setCurrentStatus('free');
+  }, [todayRecords.length]);
+
   return {
     currentStatus,
     todayRecords,
     startWork,
     endWork,
-    copyToClipboard
+    copyToClipboard,
+    resetRecords
   };
 };

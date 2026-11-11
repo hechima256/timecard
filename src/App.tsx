@@ -11,7 +11,8 @@ export const App: React.FC = () => {
     todayRecords,
     startWork,
     endWork,
-    copyToClipboard
+    copyToClipboard,
+    resetRecords
   } = useWorkStatus();
 
   return (
@@ -34,8 +35,10 @@ export const App: React.FC = () => {
         
         <ActionButtons
           currentStatus={currentStatus}
+          hasRecords={todayRecords.length > 0}
           startWork={startWork}
           endWork={endWork}
+          resetRecords={resetRecords}
         />
       </main>
     </div>
