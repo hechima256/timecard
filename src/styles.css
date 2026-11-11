@@ -330,47 +330,221 @@ body {
 
 /* 記録一覧のスタイル */
 .records-list {
-  margin-top: 1.5rem;
-  padding: 1rem;
-  background: var(--bg-primary);
+  margin-top: 2rem;
+  padding: 1rem 1.25rem;
+  background: var(--bg-secondary);
   border-radius: 8px;
-  box-shadow: 0 2px 4px var(--shadow-color);
+  text-align: left;
+}
+
+.records-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .records-list h3 {
   color: var(--text-secondary);
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
-  text-align: left;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.records-empty {
+  padding: 0.5rem 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
 }
 
 .records-container {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  max-height: 200px;
-  overflow-y: auto;
-  padding-right: 0.5rem;
 }
 
 .record-item {
   display: flex;
   align-items: center;
-  padding: 0.5rem;
-  background: var(--bg-secondary);
-  border-radius: 4px;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  padding: 0.6rem 0.75rem;
+  background: var(--bg-primary);
+  border-radius: 6px;
   font-size: 0.9rem;
 }
 
 .record-number {
   color: var(--text-secondary);
-  margin-right: 1rem;
-  min-width: 4rem;
+  min-width: 3.5rem;
 }
 
 .record-time {
+  flex: 1;
   font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
   color: var(--text-primary);
+}
+
+.record-actions {
+  display: flex;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+.record-action-button {
+  padding: 0.3rem 0.6rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+}
+
+.record-action-button:hover:not(:disabled) {
+  color: var(--primary-color);
+  background: var(--bg-secondary);
+}
+
+.record-action-button.danger:hover:not(:disabled) {
+  color: var(--danger-color);
+}
+
+.record-action-button:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 1px;
+}
+
+.record-action-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.record-add-button {
+  padding: 0.4rem 0.8rem;
+  border: 1px dashed var(--border-color);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+}
+
+.record-add-button:hover:not(:disabled) {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+  background: var(--bg-primary);
+}
+
+.record-add-button:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.record-add-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* 記録の編集・追加フォーム */
+.record-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.record-form-fields {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+}
+
+.record-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.record-form-field input {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+  font-size: 0.95rem;
+  color-scheme: light dark;
+}
+
+.record-form-field input:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+.record-form-separator {
+  padding-bottom: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.record-form-hint {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.record-form-error {
+  font-size: 0.85rem;
+  color: var(--danger-color);
+}
+
+.record-form-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.record-form-save,
+.record-form-cancel {
+  padding: 0.4rem 0.9rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.record-form-save {
+  border: 1px solid var(--primary-color);
+  background: var(--primary-color);
+  color: white;
+}
+
+.record-form-save:hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.record-form-cancel {
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.record-form-cancel:hover {
+  background: var(--bg-secondary);
+}
+
+.record-form-save:focus-visible,
+.record-form-cancel:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
 }
 
 /* Responsive design */
@@ -402,6 +576,17 @@ body {
   .copy-button {
     width: 100%;
     justify-content: center;
+  }
+
+  .records-list-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .record-actions {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-end;
   }
 
   .status, .time-value {

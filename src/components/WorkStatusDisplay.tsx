@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import type { WorkStatus, WorkTimeRecord } from '../types';
+import type { WorkStatus } from '../types';
 
 interface WorkStatusDisplayProps {
   currentStatus: WorkStatus;
-  todayRecords: WorkTimeRecord[];
 }
 
-export const WorkStatusDisplay: React.FC<WorkStatusDisplayProps> = ({
-  currentStatus,
-  todayRecords
-}) => {
+export const WorkStatusDisplay: React.FC<WorkStatusDisplayProps> = ({ currentStatus }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -20,15 +16,6 @@ export const WorkStatusDisplay: React.FC<WorkStatusDisplayProps> = ({
 
     return () => clearInterval(timer);
   }, []);
-
-  // 時刻のフォーマット
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('ja-JP', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    });
-  };
 
   // 現在時刻の表示形式
   const formattedCurrentTime = currentTime.toLocaleTimeString('ja-JP', {
@@ -52,21 +39,6 @@ export const WorkStatusDisplay: React.FC<WorkStatusDisplayProps> = ({
         <span className="time-label">現在時刻:</span>
         <span className="time-value">{formattedCurrentTime}</span>
       </div>
-      {todayRecords.length > 0 && (
-        <div className="records-list">
-          <h3>本日の記録</h3>
-          <div className="records-container">
-            {todayRecords.map((record, index) => (
-              <div key={index} className="record-item">
-                <span className="record-number">{index + 1}回目:</span>
-                <span className="record-time">
-                  {formatTime(record.startTime)} - {record.endTime ? formatTime(record.endTime) : '進行中'}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
